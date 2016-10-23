@@ -1,46 +1,36 @@
 # workshop_01
+
+"""Creazione di un telaio con pilastri e travi"""
+
 from larlib import *
 
+pillarsLength = [3.0, 5.0, 5.0]
+beamsLength = [10.0, 5.0]
+pillarWidth = 0.5
+beamWidth  = pillarWidth/2.0
 
-beams_weight = [3.0, 6.0, 4.0, 3.0]
-pilars_height = [5.0, 4.0, 3.0]
-pilar_space_tot=0
+pillars = CUBOID([0,0,0])
+arch = STRUCT([pillars])
 
-p0 = CUBOID([0,0,0])
-arc_all = STRUCT([p0])
-pilar_height_tot=0
-
-for y,p in enumerate(pilars_height):
-	p1 = CUBOID([1,1,p])
-	beam_weight_tot=0
-	if y!=0:
-			p1_t = STRUCT([T(3)(pilar_height_tot+1), p1])
-			arc_all = STRUCT([arc_all,p1_t])
-	else:
-			arc_all = STRUCT([arc_all,p1])
+def chassis(pillarsLengthAll, beamsLengthAll, x, k, archTotal):
+	pillars1 = (CUBOID([pillarWidth,pillarWidth,pillarsLength[k]]))
+	pillars1All = STRUCT([T(2)(beamsLengthAll),T(3)(pillarsLengthAll), pillars1])
+	beams1 = (CUBOID([beamWidth,beamsLength[x],beamWidth]))
+	beams1All = STRUCT([T([1,2,3])([beamWidth/2.0, (3.0*pillarWidth/4.0)+beamsLengthAll,pillarsLengthAll+pillarsLength[k]]), beams1])
+	beamsLengthAll=beamsLengthAll+beamsLength[x]+(pillarWidth/2.0)
 	
-	pilar_height_tot= pilar_height_tot + p
-
-	for i,b in enumerate(beams_weight):
-		t1_next = CUBOID([1,b,1])
-		if i==0:
-			if(y==0):
-				t1_next_t = STRUCT([T(2)(0.5),T(3)(pilar_height_tot), t1_next])
-			else:
-				t1_next_t = STRUCT([T(2)(0.5),T(3)(pilar_height_tot+1), t1_next])
+	if x == len(beamsLength) - 1:
+		pillars1NextTotal = STRUCT([T(2)(beamsLengthAll),T(3)(pillarsLengthAll), pillars1])
+		pillarsLengthAll = pillarsLengthAll + pillarsLength[k] + beamWidth
+		archTotal = STRUCT([archTotal,pillars1All,beams1All,pillars1NextTotal])
+		if k != len(pillarsLength) - 1:
+			k=k+1
+			return chassis(pillarsLengthAll, 0, 0, k, archTotal)
 		else:
-			if(y==0):
-				t1_next_t = STRUCT([T(2)(beam_weight_tot+0.5),T(3)(pilar_height_tot), t1_next])
-			else:
-				t1_next_t = STRUCT([T(2)(beam_weight_tot+0.5),T(3)(pilar_height_tot+1), t1_next])
-		beam_weight_tot = beam_weight_tot + b
-		p1_next = CUBOID([1,1,p])
-		if(y==0):
-			p1_next_t = STRUCT([T(2)(beam_weight_tot), p1_next])
-		else:
-			p1_next_t = STRUCT([T(2)(beam_weight_tot),T(3)(pilar_height_tot-p+1), p1_next])
-		arc = STRUCT([p1_next_t,t1_next_t])
-		arc_all = STRUCT([arc_all,arc])
+			VIEW(archTotal)
+	else:
+		x=x+1
+		archTotal = STRUCT([archTotal,pillars1All,beams1All])
+		return chassis(pillarsLengthAll, beamsLengthAll, x, k, archTotal)
 
-
-VIEW(arc_all)
+chassis(0, 0, 0, 0, arch)
