@@ -3,9 +3,11 @@
 """Creazione di una struttura composta da telai di pilastri e travi
 """
 
-from larlib import *
+from pyplasm import *
 
 import csv
+
+import numpy as np
 
 """pillarsLength: lunghezza pilastri 
 	beamsLength: lunghezza travi 
@@ -14,16 +16,41 @@ import csv
 	planDist: distanza tra  piani
 """
 
-pillarsLength = [0.5, 3.0, 3.0, 3.05]
-beamsLength = [4.5, 4.5]
-pillarWidth = 0.5
-beamWidth  = pillarWidth/2.0
-planDist = [4.5, 4.5, 4.5, 4.5]
+"""
+	beamsLength = [4.5, 4.5]
+	pillarsLength = [0.5, 3.0, 3.0, 3.0]
+	planDist = [4.5, 4.5, 4.5, 4.5]
+	pillarWidth = 0.5
+	beamWidth  = pillarWidth/2.0
+"""
 
 with open('frame_data_441476./frame_data_441476.csv', 'rb') as csvfile:
     dialect = csv.Sniffer().sniff(csvfile.read(1024))
     csvfile.seek(0)
     reader = csv.reader(csvfile, dialect)
+    for i,row in enumerate(reader):
+    	if i == 0:
+    		beamsLength = row
+    		beamsLength = filter(None, beamsLength)
+    		beamsLength = np.array(beamsLength, dtype=float)
+    		print beamsLength
+    	if i == 1:
+    		pillarsLength = row
+    		pillarsLength = filter(None, pillarsLength)
+    		pillarsLength = np.array(pillarsLength, dtype=float)
+    		print pillarsLength
+    	if i == 2:
+    		planDist = row
+    		planDist = filter(None, planDist)
+    		planDist = np.array(planDist, dtype=float)
+    		print planDist
+    	if i == 3:
+    		pillarWidth = row[0]
+    		pillarWidth = float(pillarWidth)
+    	if i == 4:
+    		beamWidth = row[0]
+    		beamWidth = float(beamWidth)
+
 
 """Struttura vuota dove verra' costruito il telaio
 """
