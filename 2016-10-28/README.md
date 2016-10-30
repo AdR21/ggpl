@@ -7,4 +7,4 @@ Scegliere una scala a piacere e replicarla in Python usando la libreria grafica 
 ![alt text](https://github.com/AdR21/ggpl/blob/master/2016-10-28/img/stair_with_landing.jpg "Esempio")
 
 ## Riproduzione 3d in Python
-![alt text](https://github.com/AdR21/ggpl/blob/master/2016-10-28/img/stair_with_landing.jpg "Struttura 3D")
+![alt text](https://github.com/AdR21/ggpl/blob/master/2016-10-28/img/stair1.JPG "Struttura 3D")
