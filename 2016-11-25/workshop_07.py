@@ -8,7 +8,6 @@ from pyplasm import *
 def intRGBColor(values):
     return Color4f([values[0]/255.0,values[1]/255.0,values[2]/255.0,1.0])
 
-
 """ xArray = array corresponds to the x
     yArray = array corresponds to the y
     slot = array of arrays that determines which cells are glass and such wooden"""
@@ -65,7 +64,6 @@ def ggpl_door(i, j, partStruct):
             return ggpl_door(0, j+1, partStruct)
     else:
         VIEW(partStruct)
-
 
 ggpl_window(0, 0, initStruct)
 #ggpl_door(0, 0, initStruct)
