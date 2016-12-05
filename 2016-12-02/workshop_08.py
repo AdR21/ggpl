@@ -43,7 +43,7 @@ def housePlan(l,i,h,s1):
 		if i < len(level[l])-1:
 			#Take the point of a wall
 			wall = level[l][i]
-			#It inserts them into an array By splitting the comma
+			#It inserts them into an array by splitting the comma
 			wallSplit = wall.split(",")
 			#Transform each element from string to float
 			wallNumber = np.array(wallSplit, dtype=float)
