@@ -53,7 +53,7 @@ vertsStruct = [
   [x[6],y[3],z[0]], #8
   [x[5],y[3],z[0]], #9
   [x[5],y[0],z[0]], #10
-  [x[3],y[1],z[1]], #11 ---> interior
+  [x[3],y[1],z[1]], #11 ---> internal
   [x[1],y[3],z[1]], #12
   [x[1],y[5],z[1]], #13
   [x[10],y[5],z[1]], #14
@@ -93,13 +93,8 @@ cellsStructBorder = [
 ]
 
 """ Creation of the cells with the coordinates of the polygon """
-roof = MKPOL([vertsStruct, cellsStruct,[1]])
-roof = TEXTURE([roofTexture, TRUE, FALSE, 1, 1, 0, 6, 6])(OFFSET([par, par, par])(SKEL_2(roof)))
+roof = MKPOL([vertsStruct,[1]])
+roof = (OFFSET([par, par, par])(SKEL_2(roof)))
 
-""" Creation of the roof """
-paviment = MKPOL([vertsStruct, [[11,12,13,19,20],[19,13,14,18],[14,15,16,17,18]],[1]])
-paviment = TEXTURE([floorTexture, TRUE, FALSE, 1, 1, 0, 6, 6])(OFFSET([par, par, par])(SKEL_2(paviment)))
 
-completeRoof = STRUCT([roof,paviment])
-
-VIEW(completeRoof)
+VIEW(roof)
