@@ -3,8 +3,8 @@
 ## Descrizione workshop
 Creare un tetto partendo da un poligono non regolare
 
-###Poligono no regolare
-![alt text]()
+###Poligono non regolare
+![alt text](https://github.com/AdR21/ggpl/blob/master/2016-12-16/img/poligono.png)
 
 ###Risultato finale
 ![alt text](https://github.com/AdR21/ggpl/blob/master/2016-12-16/img/Cattura.JPG)
