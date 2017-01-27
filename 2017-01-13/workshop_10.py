@@ -84,7 +84,7 @@ def buildExternal(l,i,h,s1):
   else:
     return s1
 
-def buildIntenal(l,i,h,s1):
+def buildInternal(l,i,h,s1):
   if l <= len(levelInternal)-1:
     if i < len(levelInternal[l]):
       params = parseLines(l,i,levelInternal)
@@ -93,10 +93,10 @@ def buildIntenal(l,i,h,s1):
       a_texture = TEXTURE([wallTexture, TRUE, FALSE, 1, 1, 0, 2, 1])(a_off)
       a_tras = STRUCT([T(3)(h), a_texture])
       s2 = STRUCT([a_tras, s1])
-      return buildIntenal(l,i+1,h,s2)
+      return buildInternal(l,i+1,h,s2)
     else:
       h = h + level_height[l]
-      return buildIntenal(l+1,0,h,s1)
+      return buildInternal(l+1,0,h,s1)
   else:
     return s1
 
@@ -240,40 +240,43 @@ def buildFloor2(i,base,s1):
     s1 = SOLIDIFY(SKEL_2(s1))
     s1 = DIFF([base,s1])
     s1 = TEXTURE([pavTexture, TRUE, FALSE, 1, 1, 0, 1, 1])(s1)
-    return s1
+  return s1
 
-
-# def buildStair(tempLength,tempHeight,s1):
-#   params = parseLines(0,3,levelStair)
-#   params2 = parseLines(0,0,levelStair)
-#   height = 80.0
-#   steps=10.0
-#   length = (params2[2]-params2[0])
-#   build = POLYLINE([[params[0],params[1]],[params[2],params[3]]])
-#   buildOffset = OFFSET([5.0, (length/steps), (height/steps)])(build)
-#   traslation=STRUCT([T([1,2,3])([0.5,tempLength+(length/steps),tempHeight]),buildOffset])
-#   tempLength=tempLength + (length/steps)
-#   tempHeight=tempHeight + (height/steps)
-#   s1=STRUCT([traslation,s1])
-#   if tempLength < length:
-#     return buildStair(tempLength, tempHeight, s1)
-#   else:
-#     s1 = TEXTURE([pavTexture, TRUE, FALSE, 1, 1, 0, 1, 1])(s1)
-#     s1=STRUCT([traslation,s1])
-#     return s1
+def buildStair(tempLength,tempHeight,s1):
+  params = parseLines(0,0,levelStair)
+  params2 = parseLines(0,2,levelStair)
+  height = 80.0
+  height_step = 5.44
+  steps=height/height_step
+  steps=height/steps
+  length_step = 13.0
+  #length = steps*length_step
+  length = (params2[3]-params2[0])
+  build = POLYLINE([[params[0],params[1]],[params[2],params[3]]])
+  buildOffset = OFFSET([5.0, length_step, height_step])(build)
+  traslation=STRUCT([T([1,2,3])([0.5,tempLength+length_step,tempHeight]),buildOffset])
+  tempLength=tempLength + length_step/2
+  tempHeight=tempHeight + height_step
+  s1=STRUCT([traslation,s1])
+  if tempHeight < height:
+    return buildStair(tempLength, tempHeight, s1)
+  else:
+    s1 = TEXTURE([pavTexture, TRUE, FALSE, 1, 1, 0, 1, 1])(s1)
+    s1=STRUCT([traslation,s1])
+  return s1
 
 def buildHouse():
   floor1_level = buildFloor1(0,initStruct)
   floor2_level = buildFloor2(0,floor1_level,initStruct)
   external_level = buildExternal(0,0,0.0,initStruct)
-  internal_level = buildIntenal(0,0,0.0,initStruct)
+  internal_level = buildInternal(0,0,0.0,initStruct)
   doors_level = buildAllDoors(0,0,0.0,initStruct)
   windows_level = buildAllWindows(0,0,30.0,initStruct)
   roof_level_1 = buildRoof(0,initStruct)
   roof_level_2 = buildRoof(2,initStruct)
-  #stairs_level = buildStair(0.0,0.0,initStruct)
+  stairs_level = buildStair(0.0,0.0,initStruct)
   house=STRUCT([floor1_level,T(3)(3.0),external_level])
-  #house=STRUCT([house,T(3)(3.5),stairs_level])
+  house=STRUCT([house,T(3)(3.5),stairs_level])
   house=STRUCT([house,T(3)(3.5),internal_level])
   house=STRUCT([house,T(3)(83.0),floor2_level])
   house=STRUCT([house,T(3)(163.0),floor1_level])
