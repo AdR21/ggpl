@@ -51,20 +51,20 @@ def parseLines(l,i, params):
   return arrayLine
 
 #Creation first floor
-def buildFloor1(i,s1):
+def createFloor1(i,s1):
   if i < len(levelBase[0]):
     params = parseLines(0,i,levelBase)
     a_pol = POLYLINE([[params[0],params[1]],[params[2],params[3]]])
     a_off = OFFSET([4.0, 5.5, 2.0])(a_pol)
     s2 = STRUCT([a_off, s1])
-    return buildFloor1(i+1,s2)
+    return createFloor1(i+1,s2)
   else:
     s1 = SOLIDIFY(SKEL_2(s1))
     s1 = TEXTURE([pavTexture, TRUE, FALSE, 1, 1, 0, 1, 1])(s1)
     return s1
 
 #Creation external wall
-def buildExternal(l,i,h,s1):
+def createExternalWalls(l,i,h,s1):
   if l <= len(levelExternal)-1:
     if i < len(levelExternal[l]):
       params = parseLines(l,i,levelExternal)
@@ -79,15 +79,15 @@ def buildExternal(l,i,h,s1):
           a_texture = TEXTURE([wallTexture, TRUE, FALSE, 1, 1, 0, 6, 1])(a_off)
       a_tras = STRUCT([T(3)(h), a_texture])
       s2 = STRUCT([a_tras, s1])
-      return buildExternal(l,i+1,h,s2)
+      return createExternalWalls(l,i+1,h,s2)
     else:
       h = h + levelHeight[l]
-      return buildExternal(l+1,0,h,s1)
+      return createExternalWalls(l+1,0,h,s1)
   else:
     return s1
 
 #Creation internal wall
-def buildInternal(l,i,h,s1):
+def createInternalWalls(l,i,h,s1):
   if l <= len(levelInternal)-1:
     if i < len(levelInternal[l]):
       params = parseLines(l,i,levelInternal)
@@ -96,15 +96,15 @@ def buildInternal(l,i,h,s1):
       a_texture = TEXTURE([wallTexture, TRUE, FALSE, 1, 1, 0, 2, 1])(a_off)
       a_tras = STRUCT([T(3)(h), a_texture])
       s2 = STRUCT([a_tras, s1])
-      return buildInternal(l,i+1,h,s2)
+      return createInternalWalls(l,i+1,h,s2)
     else:
       h = h + levelHeight[l]
-      return buildInternal(l+1,0,h,s1)
+      return createInternalWalls(l+1,0,h,s1)
   else:
     return s1
 
 #Creation a door
-def buildOneDoor(elem, j, h, door):
+def createDoor(elem, j, h, door):
   if j < 13:
     build = MKPOL([[[elem[0],elem[1],0.0],[elem[2],elem[3],0.0]],[[1,2]],[1]])
     if not j%2:
@@ -118,11 +118,11 @@ def buildOneDoor(elem, j, h, door):
       buildTras = STRUCT([T([3])([h]), buildTexture])
       h = h + 0.5
     door = STRUCT([buildTras,door])
-    return buildOneDoor(elem, j+1, h, door)
+    return createDoor(elem, j+1, h, door)
   else:
     return door
 
-#Creation handle's doors
+#Creation handle's door
 def createHandle(elem,s1):
   handle = MKPOL([[[elem[0],elem[1],0.0],[elem[2],elem[3],0.0]],[[1,2]],[1]])
   handle0 = OFFSET([8.0, 1.0, 1.0])(handle)
@@ -152,23 +152,23 @@ def createHandle(elem,s1):
   return s1
 
 #Creation all doors
-def buildAllDoors(l,i,h,s1):
+def createDoors(l,i,h,s1):
   if l <= len(levelDoors)-1:
     if i < len(levelDoors[l]):
       params = parseLines(l,i,levelDoors)
-      d = buildOneDoor(params, 0, h, initStruct)
+      d = createDoor(params, 0, h, initStruct)
       hand = createHandle(params,initStruct)
       hand = STRUCT([T([3])([h]), hand])
       finalStruct = STRUCT([d, s1, hand])
-      return buildAllDoors(l,i+1,h,finalStruct)
+      return createDoors(l,i+1,h,finalStruct)
     else:
       h = h + 80.0 
-      return buildAllDoors(l+1,0,h,s1)
+      return createDoors(l+1,0,h,s1)
   else:
     return s1
 
 #Creation a window
-def buildOneWindow(params,h):
+def createWindow(params,h):
   q1 = MKPOL([[[params[0],params[1],0.0],[params[2],params[3],0.0]],[[1,2]],[1]])
   q1 = OFFSET([3.5, 3.5, 30.0])(q1)
   #q1 = STRUCT([T(3)(5.0), q1])
@@ -197,21 +197,21 @@ def buildOneWindow(params,h):
   return allWindow
 
 #Creation all windows
-def buildAllWindows(l,i,h,s1):
+def createWindows(l,i,h,s1):
   if l <= len(levelWindows)-1:
     if i < len(levelWindows[l]):
       params = parseLines(l,i,levelWindows)
-      w = buildOneWindow(params,h)
+      w = createWindow(params,h)
       finalStruct = STRUCT([w, s1])
-      return buildAllWindows(l,i+1,h,finalStruct)
+      return createWindows(l,i+1,h,finalStruct)
     else:
       h = h + 80.0
-      return buildAllWindows(l+1,0,h,s1)
+      return createWindows(l+1,0,h,s1)
   else:
     return s1
 
 #Creation the roof
-def buildRoof(i,s1):
+def createRoof(i,s1):
   params = parseLines(0,i,levelBase)
   if i==0:
     truss = MKPOL([[[params[0],params[1],0.0],[params[2],params[3],0.0],[(params[2]+params[0])/2,(params[3]+params[1])/2,30.0]],[[1,2,3]],[1]])
@@ -234,13 +234,13 @@ def buildRoof(i,s1):
   return s2
 
 #Creation second floor
-def buildFloor2(i,base,s1):
+def createFloor2(i,base,s1):
   if i < len(levelStair[0]):
     params = parseLines(0,i,levelStair)
     a_pol = POLYLINE([[params[0],params[1]],[params[2],params[3]]])
     a_off = OFFSET([4.0, 5.5, 2.0])(a_pol)
     s2 = STRUCT([a_off, s1])
-    return buildFloor2(i+1,base,s2)
+    return createFloor2(i+1,base,s2)
   else:
     s1 = SOLIDIFY(SKEL_2(s1))
     s1 = DIFF([base,s1])
@@ -248,7 +248,7 @@ def buildFloor2(i,base,s1):
   return s1
 
 #Creation stair
-def buildStair(tempLength,tempHeight,s1):
+def createStair(tempLength,tempHeight,s1):
   params = parseLines(0,0,levelStair)
   params2 = parseLines(0,2,levelStair)
   height = 80.0
@@ -265,23 +265,23 @@ def buildStair(tempLength,tempHeight,s1):
   tempHeight=tempHeight + height_step
   s1=STRUCT([traslation,s1])
   if tempHeight < height:
-    return buildStair(tempLength, tempHeight, s1)
+    return createStair(tempLength, tempHeight, s1)
   else:
     s1 = TEXTURE([pavTexture, TRUE, FALSE, 1, 1, 0, 1, 1])(s1)
     s1=STRUCT([traslation,s1])
   return s1
 
 #Creation the house
-def buildHouse():
-  floor1Level = buildFloor1(0,initStruct)
-  floor2Level = buildFloor2(0,floor1Level,initStruct)
-  externalLevel = buildExternal(0,0,0.0,initStruct)
-  internalLevel = buildInternal(0,0,0.0,initStruct)
-  doorsLevel = buildAllDoors(0,0,0.0,initStruct)
-  windowsLevel = buildAllWindows(0,0,30.0,initStruct)
-  roofLevel1 = buildRoof(0,initStruct)
-  roofLevel2 = buildRoof(2,initStruct)
-  stairsLevel = buildStair(0.0,0.0,initStruct)
+def createHouse():
+  floor1Level = createFloor1(0,initStruct)
+  floor2Level = createFloor2(0,floor1Level,initStruct)
+  externalLevel = createExternalWalls(0,0,0.0,initStruct)
+  internalLevel = createInternalWalls(0,0,0.0,initStruct)
+  doorsLevel = createDoors(0,0,0.0,initStruct)
+  windowsLevel = createWindows(0,0,30.0,initStruct)
+  roofLevel1 = createRoof(0,initStruct)
+  roofLevel2 = createRoof(2,initStruct)
+  stairsLevel = createStair(0.0,0.0,initStruct)
   house=STRUCT([floor1Level,T(3)(3.0),externalLevel])
   house=STRUCT([house,T(3)(3.5),stairsLevel])
   house=STRUCT([house,T(3)(3.5),internalLevel])
@@ -293,4 +293,4 @@ def buildHouse():
   house=STRUCT([house,T(3)(163.0),roofLevel2])
   VIEW(house)
 
-buildHouse()
+createHouse()
